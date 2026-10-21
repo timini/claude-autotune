@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Continua proposed review result",
+  "description": "Shape validation only; evidence references require separate application validation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["episode_id", "task_stage", "dimensions", "strengths", "improvements", "uncertainties", "recommendation"],
+  "properties": {
+    "episode_id": {"type": "string", "minLength": 1, "maxLength": 200},
+    "task_stage": {"enum": ["in_progress", "claimed_complete", "blocked", "unknown"]},
+    "dimensions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["outcome", "instruction_adherence", "verification", "efficiency", "communication"],
+      "properties": {
+        "outcome": {"$ref": "#/$defs/dimension"},
+        "instruction_adherence": {"$ref": "#/$defs/dimension"},
+        "verification": {"$ref": "#/$defs/dimension"},
+        "efficiency": {"$ref": "#/$defs/dimension"},
+        "communication": {"$ref": "#/$defs/dimension"}
+      }
+    },
+    "strengths": {"type": "array", "maxItems": 8, "items": {"$ref": "#/$defs/finding"}},
+    "improvements": {"type": "array", "maxItems": 8, "items": {"$ref": "#/$defs/finding"}},
+    "uncertainties": {"type": "array", "maxItems": 12, "items": {"type": "string", "minLength": 1, "maxLength": 1200}},
+    "recommendation": {"enum": ["no_change", "investigate", "propose_candidate"]}
+  },
+  "$defs": {
+    "evidenceIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 20,
+      "items": {"type": "string", "pattern": "^e[0-9]{4,}$"}
+    },
+    "dimension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "reason", "evidence_ids"],
+      "properties": {
+        "score": {"type": ["integer", "null"], "minimum": 0, "maximum": 4},
+        "reason": {"type": "string", "minLength": 1, "maxLength": 1200},
+        "evidence_ids": {"$ref": "#/$defs/evidenceIds"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"score": {"type": "integer"}}},
+          "then": {"properties": {"evidence_ids": {"minItems": 1}}}
+        }
+      ]
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["finding", "basis", "evidence_ids"],
+      "properties": {
+        "finding": {"type": "string", "minLength": 1, "maxLength": 1200},
+        "basis": {"enum": ["observed", "inferred"]},
+        "evidence_ids": {"$ref": "#/$defs/evidenceIds", "minItems": 1}
+      }
+    }
+  }
+}
