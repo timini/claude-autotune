@@ -1,0 +1,52 @@
+{
+  "id": "seed-pair-style-family",
+  "synthetic": true,
+  "kind": "pairwise",
+  "split": "calibration",
+  "task_family": "docs-update",
+  "probe": "style_family",
+  "note": "Synthetic tooling fixture. Labels are set by construction, not by human labellers. Not calibration evidence.",
+  "episode": {
+    "end_reason": "answer"
+  },
+  "labels": {
+    "labellers": [
+      "synthetic-author"
+    ],
+    "pass": null,
+    "dimensions": {},
+    "adjudicated": true,
+    "ambiguous": false
+  },
+  "pairwise": {
+    "request": "Update the install section of README.md for the new package name.",
+    "rubric": "Prefer the run that completes the request with passing required checks. Do not reward length or style.",
+    "a": {
+      "answer": "Updated README.md: the install command now uses new-name. No old-name references remain.",
+      "tools": [],
+      "denials": [],
+      "checks": [
+        {
+          "id": "no-old-name",
+          "type": "file_not_contains",
+          "status": "pass",
+          "detail": "README.md"
+        }
+      ]
+    },
+    "b": {
+      "answer": "readme fixed. new-name now. grep finds no old-name left.",
+      "tools": [],
+      "denials": [],
+      "checks": [
+        {
+          "id": "no-old-name",
+          "type": "file_not_contains",
+          "status": "pass",
+          "detail": "README.md"
+        }
+      ]
+    },
+    "expected": "tie"
+  }
+}

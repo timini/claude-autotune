@@ -1,0 +1,36 @@
+{
+  "id": "general-explain-module",
+  "task_family": "general",
+  "kind": "general",
+  "critical": false,
+  "description": "A plain explanation request; any harness change should leave it working.",
+  "request": "Explain calc.py in two sentences.",
+  "fixture": {
+    "files": {
+      "calc.py": "def add(a, b):\n    return a - b\n"
+    },
+    "from_commit": null
+  },
+  "harness_paths": [
+    "CLAUDE.md"
+  ],
+  "allowed_tools": [
+    "Read",
+    "Grep",
+    "Glob",
+    "Bash"
+  ],
+  "allowed_bash": [],
+  "network": "not_required",
+  "trials_per_arm": 1,
+  "timeout_seconds": 120,
+  "graders": [
+    {
+      "id": "mentions-add",
+      "type": "answer_contains",
+      "critical": false,
+      "text": "add"
+    }
+  ],
+  "judge": null
+}

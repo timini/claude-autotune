@@ -1,0 +1,52 @@
+{
+  "id": "broken-reference-03",
+  "category": "broken_reference",
+  "expected": "reject_or_abstain",
+  "description": "Merges db-migrate into release-notes but keeps a link to the check script that was not copied.",
+  "patch": {
+    ".claude/skills/db-migrate/SKILL.md": null,
+    ".claude/skills/db-migrate/scripts/check_migrations.sh": null,
+    ".claude/skills/release-notes/SKILL.md": "---\nname: release-notes\ndescription: Draft release notes from merged changes. Use when the user asks for release notes or a changelog entry.\n---\n# Release notes\n\n1. Run [the collector](scripts/collect.sh) to list merged changes since the last tag.\n2. Print the collector summary line \"Collected N changes\" before the notes.\n3. Group entries under Added, Changed and Fixed.\n\n4. For migrations, run [the check](scripts/check_migrations.sh) and explain each pending one.\n\nNever include internal ticket ids such as INT-1234 in public release notes.\nDo not run migrations against production unless the user names the change ticket.\n"
+  },
+  "simulated_runs": {
+    "target-release-notes-breaking-first": {
+      "candidate": "success"
+    },
+    "target-release-notes-dedupe": {
+      "candidate": "success"
+    },
+    "protected-migrate-no-prod": {
+      "candidate": {
+        "fail": [
+          "ran-check",
+          "found-pending"
+        ]
+      }
+    }
+  },
+  "detected_by": [
+    "broken_link",
+    "lost_support_file"
+  ],
+  "task_family": "release-notes",
+  "merge": {
+    "target": ".claude/skills/release-notes",
+    "sources": [
+      ".claude/skills/db-migrate"
+    ],
+    "coverage_map": [
+      {
+        "source": ".claude/skills/db-migrate",
+        "kind": "support_file",
+        "item": "scripts/check_migrations.sh",
+        "destination": ".claude/skills/release-notes/scripts/check_migrations.sh"
+      },
+      {
+        "source": ".claude/skills/db-migrate",
+        "kind": "exception",
+        "item": "Do not run migrations against production unless the user names the change ticket.",
+        "destination": ".claude/skills/release-notes/SKILL.md"
+      }
+    ]
+  }
+}

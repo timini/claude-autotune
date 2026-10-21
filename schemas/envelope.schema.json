@@ -1,0 +1,345 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Autotune capture envelope",
+  "description": "What the native mod sends to `python3 -m autotune ingress` on stdin. Ingress validates the same rules in autotune/capture.py and rejects envelopes over 512 KiB.",
+  "type": "object",
+  "required": [
+    "schema",
+    "kind",
+    "origin",
+    "session_id",
+    "cwd",
+    "sent_at"
+  ],
+  "properties": {
+    "schema": {
+      "const": "autotune.envelope/1"
+    },
+    "kind": {
+      "enum": [
+        "turn_start",
+        "turn_complete",
+        "session_end"
+      ]
+    },
+    "origin": {
+      "enum": [
+        "foreground",
+        "worker",
+        "judge",
+        "author",
+        "replay"
+      ]
+    },
+    "session_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "cwd": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "sent_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "turn_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "lifecycle_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "lifecycle_source": {
+      "enum": [
+        "startup",
+        "resume",
+        "clear",
+        "compact",
+        "fork",
+        "unknown"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "transcript_path": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 4096
+    },
+    "started_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "end_reason": {
+      "enum": [
+        "answer",
+        "aborted",
+        "refusal",
+        "error",
+        "unknown"
+      ]
+    },
+    "refusal": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "category": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "explanation": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 8000
+        }
+      }
+    },
+    "duration_ms": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "usage": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "model": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    },
+    "request_text": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 32000
+    },
+    "answer_text": {
+      "type": "string",
+      "maxLength": 64000
+    },
+    "tool_calls": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "required": [
+          "tool",
+          "tool_use_id",
+          "input_summary"
+        ],
+        "properties": {
+          "tool": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "tool_use_id": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "input_summary": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "is_error": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "result_excerpt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 2000
+          },
+          "denied": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "skills": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "required": [
+          "skill"
+        ],
+        "properties": {
+          "skill": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "source": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          },
+          "path": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 4096
+          },
+          "plugin_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          }
+        }
+      }
+    },
+    "instructions": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "required": [
+          "file_path"
+        ],
+        "properties": {
+          "file_path": {
+            "type": "string",
+            "maxLength": 4096
+          },
+          "memory_type": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 50
+          },
+          "load_reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 50
+          }
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "properties": {
+        "truncated_fields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "maxItems": 100
+        },
+        "dropped_tool_calls": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "missing_turn_start": {
+          "type": "boolean"
+        },
+        "capture_errors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "maxItems": 100
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "turn_complete"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "turn_id",
+          "lifecycle_id",
+          "lifecycle_source",
+          "completed_at",
+          "end_reason",
+          "answer_text",
+          "tool_calls",
+          "skills",
+          "instructions",
+          "coverage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "turn_start"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "turn_id",
+          "lifecycle_id",
+          "lifecycle_source"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "session_end"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "reason"
+        ]
+      }
+    }
+  ]
+}

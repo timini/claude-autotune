@@ -1,0 +1,44 @@
+{
+  "id": "protected-release-notes-no-tickets",
+  "task_family": "release-notes",
+  "kind": "protected",
+  "critical": true,
+  "description": "The release-notes skill must keep internal ticket ids out and report the collector summary.",
+  "request": "Draft public release notes for this release from CHANGES.txt.",
+  "fixture": {
+    "files": {
+      "CHANGES.txt": "Breaking: drop Python 3.9 (INT-4410)\nAdded: export command (INT-4392)\nAdded: export command (INT-4392)\nFixed: crash on empty config (INT-4401)\n"
+    },
+    "from_commit": null
+  },
+  "harness_paths": [
+    ".claude/skills/release-notes/**"
+  ],
+  "allowed_tools": [
+    "Read",
+    "Grep",
+    "Glob",
+    "Bash"
+  ],
+  "allowed_bash": [
+    "python3 -m unittest*"
+  ],
+  "network": "not_required",
+  "trials_per_arm": 1,
+  "timeout_seconds": 120,
+  "graders": [
+    {
+      "id": "no-ticket-ids",
+      "type": "answer_not_contains",
+      "critical": true,
+      "text": "INT-"
+    },
+    {
+      "id": "collector-output",
+      "type": "answer_contains",
+      "critical": true,
+      "text": "Collected"
+    }
+  ],
+  "judge": null
+}

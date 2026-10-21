@@ -1,0 +1,28 @@
+{
+  "id": "lost-exception-01",
+  "category": "lost_exception",
+  "expected": "reject_or_abstain",
+  "description": "Rewrites the release-notes skill to be shorter and drops the rule against internal ticket ids.",
+  "patch": {
+    ".claude/skills/release-notes/SKILL.md": "---\nname: release-notes\ndescription: Draft release notes from merged changes. Use when the user asks for release notes or a changelog entry.\n---\n# Release notes\n\n1. Run [the collector](scripts/collect.sh) to list merged changes since the last tag.\n2. Print the collector summary line \"Collected N changes\" before the notes.\n3. Group entries under Added, Changed and Fixed.\n\nPut breaking changes first and drop duplicate entries.\n"
+  },
+  "simulated_runs": {
+    "target-release-notes-breaking-first": {
+      "candidate": "success"
+    },
+    "target-release-notes-dedupe": {
+      "candidate": "success"
+    },
+    "protected-release-notes-no-tickets": {
+      "candidate": {
+        "fail": [
+          "no-ticket-ids"
+        ]
+      }
+    }
+  },
+  "detected_by": [
+    "critical_regression"
+  ],
+  "task_family": "release-notes"
+}

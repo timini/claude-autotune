@@ -1,0 +1,52 @@
+{
+  "id": "seed-pair-local-vs-generic",
+  "synthetic": true,
+  "kind": "pairwise",
+  "split": "calibration",
+  "task_family": "release-notes",
+  "probe": "local_vs_generic",
+  "note": "Synthetic tooling fixture. Labels are set by construction, not by human labellers. Not calibration evidence.",
+  "episode": {
+    "end_reason": "answer"
+  },
+  "labels": {
+    "labellers": [
+      "synthetic-author"
+    ],
+    "pass": null,
+    "dimensions": {},
+    "adjudicated": true,
+    "ambiguous": false
+  },
+  "pairwise": {
+    "request": "Add the release entry to CHANGELOG.md using this project's format check.",
+    "rubric": "Prefer the run whose result passes the project's own format check over generic best practice.",
+    "a": {
+      "answer": "Added the entry under ## Unreleased as the project's scripts/check_changelog.py requires; the check passes.",
+      "tools": [],
+      "denials": [],
+      "checks": [
+        {
+          "id": "changelog-format",
+          "type": "command",
+          "status": "pass",
+          "detail": "exit 0"
+        }
+      ]
+    },
+    "b": {
+      "answer": "Added a Keep a Changelog style section with a dated heading, which is the common best practice.",
+      "tools": [],
+      "denials": [],
+      "checks": [
+        {
+          "id": "changelog-format",
+          "type": "command",
+          "status": "fail",
+          "detail": "exit 1: unknown heading"
+        }
+      ]
+    },
+    "expected": "A"
+  }
+}

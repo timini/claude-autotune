@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Autotune skill curator decision",
+  "description": "Returned by the curator for one pair of overlapping project skills. The coordinator checks the coverage map against mechanically extracted exceptions and support files before any edit.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["decision", "target", "sources", "coverage_map", "rationale", "risks"],
+  "properties": {
+    "decision": {"enum": ["merge", "update", "no_change"]},
+    "target": {"type": "string", "maxLength": 300},
+    "sources": {
+      "type": "array",
+      "maxItems": 10,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 300}
+    },
+    "coverage_map": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source", "kind", "item", "destination"],
+        "properties": {
+          "source": {"type": "string", "minLength": 1, "maxLength": 300},
+          "kind": {"enum": ["trigger", "procedure", "exception", "support_file"]},
+          "item": {"type": "string", "minLength": 1, "maxLength": 2000},
+          "destination": {"type": "string", "maxLength": 500}
+        }
+      }
+    },
+    "rationale": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "risks": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {"type": "string", "minLength": 1, "maxLength": 1000}
+    }
+  }
+}

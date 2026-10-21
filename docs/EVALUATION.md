@@ -72,7 +72,7 @@ Use `claude-code/testing` mocks and `claude plugin test` for native event tests.
 
 ## 4. Review rubric
 
-Rate each dimension on 0–4, or `null` with a reason. Record task stage so an intermediate diagnostic response is not judged as a failed final delivery.
+Rate each dimension on 0 to 4, or `null` with a reason. Record task stage so an intermediate diagnostic response is not judged as a failed final delivery.
 
 | Dimension | What the reviewer checks |
 |---|---|

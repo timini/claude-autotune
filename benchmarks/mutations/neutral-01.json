@@ -1,0 +1,11 @@
+{
+  "id": "neutral-01",
+  "category": "neutral",
+  "expected": "not_accept",
+  "description": "Renames the CLAUDE.md heading.",
+  "patch": {
+    "CLAUDE.md": "# Rules for this project\n\nRun the test suite with `python3 -m unittest discover -s tests` before reporting on test status.\nDo not edit tests to make them pass.\nFollow .claude/rules/verification.md when you report results.\n"
+  },
+  "simulated_runs": {},
+  "detected_by": []
+}

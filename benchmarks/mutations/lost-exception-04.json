@@ -1,0 +1,48 @@
+{
+  "id": "lost-exception-04",
+  "category": "lost_exception",
+  "expected": "reject_or_abstain",
+  "description": "Merges release-notes into db-migrate and drops the ticket-id exception.",
+  "patch": {
+    ".claude/skills/release-notes/SKILL.md": null,
+    ".claude/skills/release-notes/scripts/collect.sh": null,
+    ".claude/skills/db-migrate/scripts/collect.sh": {
+      "content": "#!/bin/sh\n# List merged changes since the last tag, one per line.\nlast=$(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD)\ngit log --merges --format='%s' \"$last\"..HEAD\necho \"Collected $(git log --merges --format='%s' \"$last\"..HEAD | wc -l | tr -d ' ') changes\"\n",
+      "mode": "100755"
+    },
+    ".claude/skills/db-migrate/SKILL.md": "---\nname: db-migrate\ndescription: Plan and check database schema migrations. Use when the user asks to add, review or run a migration.\n---\n# Database migrations\n\n1. Run `scripts/check_migrations.sh` to list pending migrations in `db/migrations/`.\n2. Explain each pending migration before running anything.\n3. For release notes, run [the collector](scripts/collect.sh) and print its summary line.\n\nDo not run migrations against production unless the user names the change ticket.\n"
+  },
+  "simulated_runs": {
+    "target-release-notes-breaking-first": {
+      "candidate": "success"
+    },
+    "target-release-notes-dedupe": {
+      "candidate": "success"
+    },
+    "protected-release-notes-no-tickets": {
+      "candidate": {
+        "fail": [
+          "no-ticket-ids"
+        ]
+      }
+    }
+  },
+  "detected_by": [
+    "lost_exception"
+  ],
+  "task_family": "release-notes",
+  "merge": {
+    "target": ".claude/skills/db-migrate",
+    "sources": [
+      ".claude/skills/release-notes"
+    ],
+    "coverage_map": [
+      {
+        "source": ".claude/skills/release-notes",
+        "kind": "support_file",
+        "item": "scripts/collect.sh",
+        "destination": ".claude/skills/db-migrate/scripts/collect.sh"
+      }
+    ]
+  }
+}

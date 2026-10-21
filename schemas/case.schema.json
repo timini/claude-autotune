@@ -1,0 +1,176 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Autotune replay case",
+  "description": "One committed replay case under .autotune/cases/<id>.json. Read from the candidate's base commit, never from the working tree. Path safety, grader id uniqueness and regex compilation are checked by autotune/cases.py in addition to this schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id", "task_family", "kind", "critical", "description", "request", "fixture", "harness_paths",
+    "allowed_tools", "allowed_bash", "network", "trials_per_arm", "timeout_seconds", "graders"
+  ],
+  "properties": {
+    "id": {"$ref": "#/$defs/slug"},
+    "task_family": {"$ref": "#/$defs/slug"},
+    "kind": {"enum": ["target", "generalization", "protected", "negative_trigger", "general"]},
+    "critical": {"type": "boolean"},
+    "description": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "request": {"type": "string", "minLength": 1, "maxLength": 20000},
+    "fixture": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "files": {
+          "type": "object",
+          "additionalProperties": {"type": "string", "maxLength": 262144}
+        },
+        "from_commit": {
+          "anyOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["paths"],
+              "properties": {
+                "paths": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 50,
+                  "items": {"$ref": "#/$defs/relpath"}
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "harness_paths": {
+      "type": "array",
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/relpath"}
+    },
+    "allowed_tools": {
+      "type": "array",
+      "maxItems": 30,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[A-Z][A-Za-z0-9_]{0,63}$"}
+    },
+    "allowed_bash": {
+      "type": "array",
+      "maxItems": 30,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 200, "pattern": "^[^()\\n\\r\\u0000]+$"}
+    },
+    "network": {"enum": ["not_required", "required"]},
+    "trials_per_arm": {"type": "integer", "minimum": 1, "maximum": 5},
+    "timeout_seconds": {"type": "integer", "minimum": 30, "maximum": 1800},
+    "graders": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "items": {"$ref": "#/$defs/grader"}
+    },
+    "judge": {
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["rubric"],
+          "properties": {
+            "rubric": {"type": "string", "minLength": 1, "maxLength": 4000},
+            "required": {"type": "boolean"}
+          }
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "slug": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,79}$"},
+    "relpath": {"type": "string", "minLength": 1, "maxLength": 300},
+    "nonempty": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "grader": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,63}$"},
+        "type": {
+          "enum": [
+            "answer_contains", "answer_not_contains", "answer_matches", "file_unchanged", "file_contains",
+            "file_absent", "tool_used", "tool_not_used", "command"
+          ]
+        },
+        "critical": {"type": "boolean"},
+        "text": {"$ref": "#/$defs/nonempty"},
+        "case_sensitive": {"type": "boolean"},
+        "pattern": {"$ref": "#/$defs/nonempty"},
+        "path": {"$ref": "#/$defs/relpath"},
+        "tool": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]{0,63}$"},
+        "argv": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "items": {"type": "string", "minLength": 1, "maxLength": 1000}
+        },
+        "expect_exit": {"type": "integer", "minimum": 0, "maximum": 255},
+        "min_tests": {"type": ["integer", "null"], "minimum": 1, "maximum": 100000},
+        "test_format": {"enum": ["unittest", "pytest", null]},
+        "timeout_seconds": {"type": "integer", "minimum": 1, "maximum": 600}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"type": {"enum": ["answer_contains", "answer_not_contains"]}}, "required": ["type"]},
+          "then": {"required": ["text"], "$ref": "#/$defs/only_answer_text"}
+        },
+        {
+          "if": {"properties": {"type": {"const": "answer_matches"}}, "required": ["type"]},
+          "then": {"required": ["pattern"], "$ref": "#/$defs/only_pattern"}
+        },
+        {
+          "if": {"properties": {"type": {"enum": ["file_unchanged", "file_absent"]}}, "required": ["type"]},
+          "then": {"required": ["path"], "$ref": "#/$defs/only_path"}
+        },
+        {
+          "if": {"properties": {"type": {"const": "file_contains"}}, "required": ["type"]},
+          "then": {"required": ["path", "text"], "$ref": "#/$defs/only_path_text"}
+        },
+        {
+          "if": {"properties": {"type": {"enum": ["tool_used", "tool_not_used"]}}, "required": ["type"]},
+          "then": {"required": ["tool"], "$ref": "#/$defs/only_tool"}
+        },
+        {
+          "if": {"properties": {"type": {"const": "command"}}, "required": ["type"]},
+          "then": {"required": ["argv"], "$ref": "#/$defs/only_command"}
+        }
+      ]
+    },
+    "only_answer_text": {
+      "properties": {"id": true, "type": true, "critical": true, "text": true, "case_sensitive": true},
+      "additionalProperties": false
+    },
+    "only_pattern": {
+      "properties": {"id": true, "type": true, "critical": true, "pattern": true},
+      "additionalProperties": false
+    },
+    "only_path": {
+      "properties": {"id": true, "type": true, "critical": true, "path": true},
+      "additionalProperties": false
+    },
+    "only_path_text": {
+      "properties": {"id": true, "type": true, "critical": true, "path": true, "text": true},
+      "additionalProperties": false
+    },
+    "only_tool": {
+      "properties": {"id": true, "type": true, "critical": true, "tool": true},
+      "additionalProperties": false
+    },
+    "only_command": {
+      "properties": {
+        "id": true, "type": true, "critical": true, "argv": true, "expect_exit": true, "min_tests": true,
+        "test_format": true, "timeout_seconds": true
+      },
+      "additionalProperties": false
+    }
+  }
+}

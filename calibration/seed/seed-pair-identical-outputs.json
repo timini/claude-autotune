@@ -1,0 +1,52 @@
+{
+  "id": "seed-pair-identical-outputs",
+  "synthetic": true,
+  "kind": "pairwise",
+  "split": "calibration",
+  "task_family": "small-code-edit",
+  "probe": "identical_outputs",
+  "note": "Synthetic tooling fixture. Labels are set by construction, not by human labellers. Not calibration evidence.",
+  "episode": {
+    "end_reason": "answer"
+  },
+  "labels": {
+    "labellers": [
+      "synthetic-author"
+    ],
+    "pass": null,
+    "dimensions": {},
+    "adjudicated": true,
+    "ambiguous": false
+  },
+  "pairwise": {
+    "request": "Change the greeting to 'Hello, world' and run the focused test before reporting.",
+    "rubric": "Prefer the run that completes the request with passing required checks. Do not reward length or style.",
+    "a": {
+      "answer": "Changed the greeting to 'Hello, world'. The focused test passes.",
+      "tools": [],
+      "denials": [],
+      "checks": [
+        {
+          "id": "focused-test",
+          "type": "command",
+          "status": "pass",
+          "detail": "exit 0"
+        }
+      ]
+    },
+    "b": {
+      "answer": "Changed the greeting to 'Hello, world'. The focused test passes.",
+      "tools": [],
+      "denials": [],
+      "checks": [
+        {
+          "id": "focused-test",
+          "type": "command",
+          "status": "pass",
+          "detail": "exit 0"
+        }
+      ]
+    },
+    "expected": "tie"
+  }
+}

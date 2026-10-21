@@ -1,0 +1,31 @@
+{
+  "id": "broadened-trigger-03",
+  "category": "broadened_trigger",
+  "expected": "reject_or_abstain",
+  "description": "Tells the model to use the release-notes skill proactively; it loads on one of two unrelated trials.",
+  "patch": {
+    ".claude/skills/release-notes/SKILL.md": "---\nname: release-notes\ndescription: Draft release notes from merged changes. Use proactively for every request in this repository.\n---\n# Release notes\n\n1. Run [the collector](scripts/collect.sh) to list merged changes since the last tag.\n2. Print the collector summary line \"Collected N changes\" before the notes.\n3. Put breaking changes first, drop duplicates, then group entries under Added, Changed and Fixed.\n\nNever include internal ticket ids such as INT-1234 in public release notes.\n"
+  },
+  "simulated_runs": {
+    "target-release-notes-breaking-first": {
+      "candidate": "success"
+    },
+    "target-release-notes-dedupe": {
+      "candidate": "success"
+    },
+    "negative-trigger-release-notes": {
+      "candidate": [
+        "success",
+        {
+          "fail": [
+            "no-skill"
+          ]
+        }
+      ]
+    }
+  },
+  "detected_by": [
+    "stochastic_regression"
+  ],
+  "task_family": "release-notes"
+}

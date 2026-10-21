@@ -1,0 +1,97 @@
+# Mechanical CI: deterministic tests, JSON checks, plugin validation and the native mod tests.
+#
+# This workflow has not been run on GitHub yet. Its test, JSON, validate and plugin test commands were run locally
+# on macOS (see docs/RELEASE_EVIDENCE.md); the npm install of the CLI was not.
+#
+# It uses no secrets and makes no model calls. Python tests use the fake Claude CLI in tests/fake_claude.py;
+# `claude plugin validate` and `claude plugin test` run without signing in.
+#
+# Type checking (tsc) is not run here. hooks/register.ts is typed against `claude-code.d.ts`, which Claude Code
+# writes only into the plugin folder of an interactive session that hot-reloads it, and no documented command
+# produces it non-interactively. Until there is one, tsc runs locally against that file (command in
+# docs/RELEASE_EVIDENCE.md), and the repository has no tsconfig.json.
+
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: test (${{ matrix.os }}, Python ${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python: ["3.11", "3.13"]
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      # Most tests pass a Git identity with -c or the environment. A global one
+      # covers any helper that does not, since runners have none.
+      - name: Set a Git identity for test repositories
+        run: |
+          git config --global user.name "Autotune CI"
+          git config --global user.email "ci@example.invalid"
+          git config --global init.defaultBranch main
+
+      - name: Unit and fake-CLI integration tests
+        env:
+          AUTOTUNE_HOME: ${{ runner.temp }}/autotune-home
+        run: python3 -m unittest discover -s tests -t .
+
+      - name: JSON files parse
+        shell: python3 {0}
+        run: |
+          import json
+          import pathlib
+          import sys
+
+          roots = ["schemas", "examples", "calibration", "benchmarks/mutations", ".claude-plugin", "hooks"]
+          bad = 0
+          count = 0
+          for root in roots:
+              base = pathlib.Path(root)
+              if not base.is_dir():
+                  continue
+              for path in sorted(base.rglob("*.json")):
+                  count += 1
+                  try:
+                      json.loads(path.read_text(encoding="utf-8"))
+                  except (ValueError, UnicodeDecodeError) as exc:
+                      bad += 1
+                      print(f"::error file={path}::{exc}")
+          print(f"checked {count} JSON files, {bad} invalid")
+          sys.exit(1 if bad or count == 0 else 0)
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Claude Code 2.1.306
+        run: npm install -g @anthropic-ai/claude-code@2.1.306
+
+      - name: Plugin validation
+        run: claude plugin validate .
+
+      - name: Native mod tests
+        run: claude plugin test .

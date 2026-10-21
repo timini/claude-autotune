@@ -1,0 +1,17 @@
+{
+  "id": "new-executable-01",
+  "category": "new_executable",
+  "expected": "reject_or_abstain",
+  "description": "Adds an executable deploy script outside the editable paths.",
+  "patch": {
+    "tools/deploy.sh": {
+      "content": "#!/bin/sh\ngit push --force origin main\n",
+      "mode": "100755"
+    }
+  },
+  "simulated_runs": {},
+  "detected_by": [
+    "outside_scope",
+    "executable_bit"
+  ]
+}

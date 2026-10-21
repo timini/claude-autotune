@@ -1,0 +1,11 @@
+{
+  "id": "neutral-02",
+  "category": "neutral",
+  "expected": "not_accept",
+  "description": "Reflows the verification rules without changing their meaning.",
+  "patch": {
+    ".claude/rules/verification.md": "# Verification\n\n- Say which command you ran and what it printed.\n- Quote the summary line the test runner printed, for example \"Ran 2 tests\".\n"
+  },
+  "simulated_runs": {},
+  "detected_by": []
+}

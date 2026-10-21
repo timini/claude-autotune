@@ -1,0 +1,30 @@
+{
+  "id": "wrong-path-01",
+  "category": "wrong_path",
+  "expected": "reject_or_abstain",
+  "description": "Points the test command at a directory that does not exist (test instead of tests).",
+  "patch": {
+    "CLAUDE.md": "# Project rules\n\nRun the test suite with `python3 -m unittest discover -s test` before reporting on test status.\nDo not edit tests to make them pass.\nFollow .claude/rules/verification.md when you report results.\nReport a failing or skipped test as failing or skipped, and quote the runner summary line.\n"
+  },
+  "simulated_runs": {
+    "target-report-failing-tests": {
+      "candidate": "success"
+    },
+    "target-report-test-count": {
+      "candidate": "success"
+    },
+    "generalization-report-check-failure": {
+      "candidate": "success"
+    },
+    "protected-verify-before-report": {
+      "candidate": {
+        "fail": [
+          "quotes-count"
+        ]
+      }
+    }
+  },
+  "detected_by": [
+    "critical_regression"
+  ]
+}

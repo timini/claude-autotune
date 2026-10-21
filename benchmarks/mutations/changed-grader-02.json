@@ -1,0 +1,13 @@
+{
+  "id": "changed-grader-02",
+  "category": "changed_grader",
+  "expected": "reject_or_abstain",
+  "description": "Deletes the protected guard-hook case.",
+  "patch": {
+    ".autotune/cases/protected-guard-hook.json": null
+  },
+  "simulated_runs": {},
+  "detected_by": [
+    "deleted_protected"
+  ]
+}

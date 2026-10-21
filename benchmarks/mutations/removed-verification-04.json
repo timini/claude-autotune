@@ -1,0 +1,28 @@
+{
+  "id": "removed-verification-04",
+  "category": "removed_verification",
+  "expected": "reject_or_abstain",
+  "description": "Drops the collector step from the release-notes skill, so notes are written without checking merged changes.",
+  "patch": {
+    ".claude/skills/release-notes/SKILL.md": "---\nname: release-notes\ndescription: Draft release notes from merged changes. Use when the user asks for release notes or a changelog entry.\n---\n# Release notes\n\n1. List breaking changes first and drop duplicate entries.\n2. Group entries under Added, Changed and Fixed.\n\nNever include internal ticket ids such as INT-1234 in public release notes.\n"
+  },
+  "simulated_runs": {
+    "target-release-notes-breaking-first": {
+      "candidate": "success"
+    },
+    "target-release-notes-dedupe": {
+      "candidate": "success"
+    },
+    "protected-release-notes-no-tickets": {
+      "candidate": {
+        "fail": [
+          "collector-output"
+        ]
+      }
+    }
+  },
+  "detected_by": [
+    "critical_regression"
+  ],
+  "task_family": "release-notes"
+}

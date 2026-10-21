@@ -1,0 +1,12 @@
+{
+  "id": "neutral-03",
+  "category": "neutral",
+  "expected": "not_accept",
+  "description": "Adds a blank line and a trailing newline to the release-notes skill.",
+  "patch": {
+    ".claude/skills/release-notes/SKILL.md": "---\nname: release-notes\ndescription: Draft release notes from merged changes. Use when the user asks for release notes or a changelog entry.\n---\n# Release notes\n\n\n1. Run [the collector](scripts/collect.sh) to list merged changes since the last tag.\n2. Print the collector summary line \"Collected N changes\" before the notes.\n3. Group entries under Added, Changed and Fixed.\n\nNever include internal ticket ids such as INT-1234 in public release notes.\n"
+  },
+  "simulated_runs": {},
+  "detected_by": [],
+  "task_family": "release-notes"
+}

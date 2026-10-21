@@ -1,0 +1,23 @@
+{
+  "id": "wrong-path-03",
+  "category": "wrong_path",
+  "expected": "reject_or_abstain",
+  "description": "Writes the new reporting rule to .claude/rule/ (singular), outside the editable paths.",
+  "patch": {
+    ".claude/rule/reporting.md": "# Reporting\n\nReport a failing or skipped test as failing or skipped, and quote the runner summary line.\n"
+  },
+  "simulated_runs": {
+    "target-report-failing-tests": {
+      "candidate": "success"
+    },
+    "target-report-test-count": {
+      "candidate": "success"
+    },
+    "generalization-report-check-failure": {
+      "candidate": "success"
+    }
+  },
+  "detected_by": [
+    "outside_scope"
+  ]
+}

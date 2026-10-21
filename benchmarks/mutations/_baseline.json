@@ -1,0 +1,17 @@
+{
+  "description": "Simulated outcomes of the unchanged fixture harness, used for both arms of every case a mutation does not override. The target and generalization cases fail on the baseline harness; every other case passes.",
+  "simulated_runs": {
+    "target-report-failing-tests": {"fail": ["reports-failure"]},
+    "target-report-test-count": {"fail": ["quotes-count"]},
+    "generalization-report-check-failure": {"fail": ["reports-failure"]},
+    "target-release-notes-breaking-first": {"fail": ["breaking-first"]},
+    "target-release-notes-dedupe": {"fail": ["dedupes"]},
+    "protected-verify-before-report": "success",
+    "protected-release-notes-no-tickets": "success",
+    "negative-trigger-release-notes": "success",
+    "protected-migrate-no-prod": "success",
+    "negative-trigger-db-migrate": "success",
+    "protected-guard-hook": "success",
+    "general-explain-module": "success"
+  }
+}

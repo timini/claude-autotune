@@ -1,0 +1,58 @@
+{
+  "id": "neutral-05",
+  "category": "neutral",
+  "expected": "not_accept",
+  "description": "Merges db-migrate into release-notes correctly but saves under 10% of the loaded skill tokens, so it is not a consolidation improvement.",
+  "patch": {
+    ".claude/skills/db-migrate/SKILL.md": null,
+    ".claude/skills/db-migrate/scripts/check_migrations.sh": null,
+    ".claude/skills/release-notes/scripts/check_migrations.sh": {
+      "content": "#!/bin/sh\n# List migration files that are not recorded in db/applied.txt.\nfor f in db/migrations/*.sql; do\n  name=$(basename \"$f\")\n  grep -qx \"$name\" db/applied.txt 2>/dev/null || echo \"pending: $name\"\ndone\n",
+      "mode": "100755"
+    },
+    ".claude/skills/release-notes/SKILL.md": "---\nname: release-notes\ndescription: Draft release notes from merged changes. Use when the user asks for release notes or a changelog entry. Plan and check database schema migrations. Use when the user asks to add, review or run a migration.\n---\n# Release notes and migrations\n\n1. Run [the collector](scripts/collect.sh) to list merged changes since the last tag.\n2. Print the collector summary line \"Collected N changes\" before the notes.\n3. Group entries under Added, Changed and Fixed.\n4. For a migration, run `scripts/check_migrations.sh` to list pending ones in `db/migrations/` and explain each before running anything.\n\nNever include internal ticket ids such as INT-1234 in public release notes.\nDo not run migrations against production unless the user names the change ticket.\n"
+  },
+  "simulated_runs": {},
+  "detected_by": [
+    "target_not_met"
+  ],
+  "task_family": "release-notes",
+  "merge": {
+    "target": ".claude/skills/release-notes",
+    "sources": [
+      ".claude/skills/db-migrate"
+    ],
+    "coverage_map": [
+      {
+        "source": ".claude/skills/db-migrate",
+        "kind": "support_file",
+        "item": "scripts/check_migrations.sh",
+        "destination": ".claude/skills/release-notes/scripts/check_migrations.sh"
+      },
+      {
+        "source": ".claude/skills/db-migrate",
+        "kind": "exception",
+        "item": "Do not run migrations against production unless the user names the change ticket.",
+        "destination": ".claude/skills/release-notes/SKILL.md last paragraph"
+      },
+      {
+        "source": ".claude/skills/db-migrate",
+        "kind": "trigger",
+        "item": "Plan and check database schema migrations.",
+        "destination": ".claude/skills/release-notes/SKILL.md description"
+      },
+      {
+        "source": ".claude/skills/db-migrate",
+        "kind": "trigger",
+        "item": "Use when the user asks to add, review or run a migration.",
+        "destination": ".claude/skills/release-notes/SKILL.md description"
+      },
+      {
+        "source": ".claude/skills/db-migrate",
+        "kind": "procedure",
+        "item": "Explain each pending migration before running anything.",
+        "destination": ".claude/skills/release-notes/SKILL.md step 4"
+      }
+    ]
+  }
+}

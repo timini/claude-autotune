@@ -1,0 +1,42 @@
+{
+  "id": "negative-trigger-db-migrate",
+  "task_family": "db-migrate",
+  "kind": "negative_trigger",
+  "critical": false,
+  "description": "An unrelated question must not load the db-migrate skill.",
+  "request": "Summarise what calc.py contains.",
+  "fixture": {
+    "files": {
+      "calc.py": "def add(a, b):\n    return a - b\n"
+    },
+    "from_commit": null
+  },
+  "harness_paths": [
+    ".claude/skills/db-migrate/**"
+  ],
+  "allowed_tools": [
+    "Read",
+    "Grep",
+    "Glob",
+    "Bash"
+  ],
+  "allowed_bash": [],
+  "network": "not_required",
+  "trials_per_arm": 2,
+  "timeout_seconds": 120,
+  "graders": [
+    {
+      "id": "no-skill",
+      "type": "tool_not_used",
+      "critical": false,
+      "tool": "Skill"
+    },
+    {
+      "id": "answers",
+      "type": "answer_contains",
+      "critical": false,
+      "text": "add"
+    }
+  ],
+  "judge": null
+}

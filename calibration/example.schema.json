@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Autotune calibration example",
+  "description": "One human-labelled review or pairwise example for reviewer and judge calibration. Synthetic examples are tooling fixtures, never calibration evidence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "synthetic", "kind", "task_family", "episode", "labels", "probe"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{2,79}$"},
+    "synthetic": {"type": "boolean"},
+    "kind": {"enum": ["review", "pairwise"]},
+    "split": {"enum": ["rubric_development", "calibration"]},
+    "task_family": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,79}$"},
+    "note": {"type": "string", "maxLength": 2000},
+    "export": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "format": {"type": "string"},
+        "exported_at": {"type": "string"},
+        "sanitized": {"type": "boolean"}
+      }
+    },
+    "probe": {
+      "enum": [null, "reverse_order", "verbose_padding", "false_test_claim", "missing_outcome",
+               "embedded_instruction", "identical_outputs", "local_vs_generic", "style_family"]
+    },
+    "evidence": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {"$ref": "#/$defs/evidence"}
+    },
+    "episode": {
+      "type": "object",
+      "required": ["end_reason"],
+      "properties": {
+        "end_reason": {"enum": ["answer", "aborted", "refusal", "error", "unknown"]},
+        "duration_ms": {"type": ["integer", "null"], "minimum": 0},
+        "model": {"type": ["string", "null"]},
+        "repository": {"type": "object"},
+        "loaded_harness": {"type": "object"},
+        "coverage": {"type": "object"}
+      }
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["labellers", "pass", "dimensions", "adjudicated", "ambiguous"],
+      "properties": {
+        "labellers": {"type": "array", "maxItems": 10, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 100}},
+        "pass": {"type": ["boolean", "null"]},
+        "dimensions": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "outcome": {"$ref": "#/$defs/rating"},
+            "instruction_adherence": {"$ref": "#/$defs/rating"},
+            "verification": {"$ref": "#/$defs/rating"},
+            "efficiency": {"$ref": "#/$defs/rating"},
+            "communication": {"$ref": "#/$defs/rating"}
+          }
+        },
+        "adjudicated": {"type": "boolean"},
+        "ambiguous": {"type": "boolean"},
+        "notes": {"type": "string", "maxLength": 4000}
+      }
+    },
+    "pairwise": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["request", "rubric", "a", "b", "expected"],
+      "properties": {
+        "request": {"type": "string", "minLength": 1, "maxLength": 20000},
+        "rubric": {"type": "string", "minLength": 1, "maxLength": 20000},
+        "a": {"$ref": "#/$defs/run"},
+        "b": {"$ref": "#/$defs/run"},
+        "expected": {"enum": ["A", "B", "tie"]}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"kind": {"const": "review"}}},
+      "then": {"required": ["evidence"]}
+    },
+    {
+      "if": {"properties": {"kind": {"const": "pairwise"}}},
+      "then": {"required": ["pairwise"]}
+    }
+  ],
+  "$defs": {
+    "rating": {"type": ["integer", "null"], "minimum": 0, "maximum": 4},
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "role", "content"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^e[0-9]{4,}$"},
+        "kind": {"enum": ["user_request", "end_reason", "assistant_answer", "tool_call", "tool_result", "skill_load", "instruction_load"]},
+        "role": {"enum": ["user", "assistant", "tool", "system"]},
+        "content": {"type": "string", "maxLength": 100000},
+        "truncated": {"type": "boolean"},
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "source": {"type": "string"},
+            "field": {"type": "string"},
+            "index": {"type": "integer", "minimum": 0},
+            "tool": {"type": "string"},
+            "is_error": {"type": "boolean"},
+            "denied": {"type": "boolean"}
+          }
+        }
+      }
+    },
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["answer"],
+      "properties": {
+        "answer": {"type": ["string", "null"], "maxLength": 20000},
+        "tools": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name"],
+            "properties": {
+              "name": {"type": "string", "minLength": 1},
+              "input_summary": {"type": "string", "maxLength": 300}
+            }
+          }
+        },
+        "denials": {"type": "array", "maxItems": 100, "items": {"type": "string"}},
+        "checks": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "status"],
+            "properties": {
+              "id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]{1,80}$"},
+              "type": {"type": "string"},
+              "status": {"enum": ["pass", "fail", "error", "skipped"]},
+              "detail": {"type": "string", "maxLength": 500}
+            }
+          }
+        }
+      }
+    }
+  }
+}

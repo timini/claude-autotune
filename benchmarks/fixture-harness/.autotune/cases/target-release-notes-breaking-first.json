@@ -1,0 +1,44 @@
+{
+  "id": "target-release-notes-breaking-first",
+  "task_family": "release-notes",
+  "kind": "target",
+  "critical": false,
+  "description": "Release notes must list the breaking change before the additions.",
+  "request": "Write release notes for the changes listed in CHANGES.txt.",
+  "fixture": {
+    "files": {
+      "CHANGES.txt": "Breaking: drop Python 3.9 (INT-4410)\nAdded: export command (INT-4392)\nAdded: export command (INT-4392)\nFixed: crash on empty config (INT-4401)\n"
+    },
+    "from_commit": null
+  },
+  "harness_paths": [
+    ".claude/skills/release-notes/**"
+  ],
+  "allowed_tools": [
+    "Read",
+    "Grep",
+    "Glob",
+    "Bash"
+  ],
+  "allowed_bash": [
+    "python3 -m unittest*"
+  ],
+  "network": "not_required",
+  "trials_per_arm": 2,
+  "timeout_seconds": 120,
+  "graders": [
+    {
+      "id": "breaking-first",
+      "type": "answer_matches",
+      "critical": false,
+      "pattern": "(?is)breaking.*added"
+    },
+    {
+      "id": "no-ticket-ids",
+      "type": "answer_not_contains",
+      "critical": true,
+      "text": "INT-"
+    }
+  ],
+  "judge": null
+}

@@ -1,0 +1,5 @@
+{
+  "name": "autotune",
+  "version": "0.1.0",
+  "description": "Reviews each finished response in the background and records evidence for tested harness improvements"
+}

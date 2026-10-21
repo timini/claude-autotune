@@ -1,0 +1,8 @@
+{
+  "enabled": true,
+  "editable_paths": ["CLAUDE.md", ".claude/rules/**", ".claude/skills/**", ".claude/hooks/**"],
+  "executable_paths": [".claude/hooks/*.sh", ".claude/skills/*/scripts/*.sh"],
+  "field_rules": {
+    ".claude/settings.json": {"editable_keys": ["permissions", "hooks"], "executable_keys": ["hooks"]}
+  }
+}

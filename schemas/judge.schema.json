@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Autotune blinded A/B judgment",
+  "description": "Returned by the judge for one comparison of two replay runs labelled A and B. The coordinator maps labels to arms and checks every citation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["preference", "reasons", "cited"],
+  "properties": {
+    "preference": {"enum": ["A", "B", "tie", "insufficient_evidence"]},
+    "reasons": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {"type": "string", "minLength": 1, "maxLength": 1200}
+    },
+    "cited": {
+      "type": "array",
+      "maxItems": 40,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^(task\\.(request|rubric)|[AB]\\.(answer|denials|tool:[0-9]{1,4}|check:[A-Za-z0-9_.:-]{1,80}))$"
+      }
+    }
+  }
+}

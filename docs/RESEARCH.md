@@ -23,7 +23,7 @@ The [RHO paper](https://arxiv.org/abs/2606.05922v3), submitted June 2026 and rev
 
 The inspected [Claude retrospection workflow](https://github.com/wbopan/retro-harness/blob/e5f2d1a8a06ab3523ab42e0042d2fa13d9acb701/.claude/workflows/retrospection.js) edits instructions, memory, and helpers. It selects past sessions, uses worktrees for probes, and judges candidates. Its defaults include multiple diagnoses and candidates; it avoids very recent sessions. The same configured model is used across roles. When probes are unavailable, the workflow can compare harness text directly.
 
-**Design implication:** borrow the diagnosis → edit → replay structure. Use fresh baseline and candidate runs from an identical task fixture, because past and current project states may differ. Keep one candidate at a time. A text-only preference without outcome evidence must not authorize automatic application. These are proposed changes to the approach, not claims of defects established by execution.
+**Design implication:** borrow the diagnosis, edit and replay structure. Use fresh baseline and candidate runs from an identical task fixture, because past and current project states may differ. Keep one candidate at a time. A text-only preference without outcome evidence must not authorize automatic application. These are proposed changes to the approach, not claims of defects established by execution.
 
 The separate [Python optimization loop](https://github.com/wbopan/retro-harness/blob/e5f2d1a8a06ab3523ab42e0042d2fa13d9acb701/src/rho/loop.py) is useful for understanding reusable optimization boundaries. Autotune does not need to adopt RHO's storage/control structures; Git already supplies the desired file history.
 

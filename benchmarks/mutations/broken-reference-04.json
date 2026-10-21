@@ -1,0 +1,51 @@
+{
+  "id": "broken-reference-04",
+  "category": "broken_reference",
+  "expected": "reject_or_abstain",
+  "description": "Merges release-notes into db-migrate and links the collector at its old path in the removed directory.",
+  "patch": {
+    ".claude/skills/release-notes/SKILL.md": null,
+    ".claude/skills/release-notes/scripts/collect.sh": null,
+    ".claude/skills/db-migrate/SKILL.md": "---\nname: db-migrate\ndescription: Plan and check database schema migrations. Use when the user asks to add, review or run a migration.\n---\n# Database migrations\n\n1. Run `scripts/check_migrations.sh` to list pending migrations in `db/migrations/`.\n2. Explain each pending migration before running anything.\n3. For release notes, run [the collector](../release-notes/scripts/collect.sh).\n\nNever include internal ticket ids such as INT-1234 in public release notes.\nDo not run migrations against production unless the user names the change ticket.\n"
+  },
+  "simulated_runs": {
+    "target-release-notes-breaking-first": {
+      "candidate": "success"
+    },
+    "target-release-notes-dedupe": {
+      "candidate": "success"
+    },
+    "protected-release-notes-no-tickets": {
+      "candidate": {
+        "fail": [
+          "collector-output"
+        ]
+      }
+    }
+  },
+  "detected_by": [
+    "broken_link",
+    "lost_support_file"
+  ],
+  "task_family": "release-notes",
+  "merge": {
+    "target": ".claude/skills/db-migrate",
+    "sources": [
+      ".claude/skills/release-notes"
+    ],
+    "coverage_map": [
+      {
+        "source": ".claude/skills/release-notes",
+        "kind": "support_file",
+        "item": "scripts/collect.sh",
+        "destination": "../release-notes/scripts/collect.sh"
+      },
+      {
+        "source": ".claude/skills/release-notes",
+        "kind": "exception",
+        "item": "Never include internal ticket ids such as INT-1234 in public release notes.",
+        "destination": ".claude/skills/db-migrate/SKILL.md"
+      }
+    ]
+  }
+}

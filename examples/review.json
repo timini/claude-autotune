@@ -71,6 +71,9 @@
     "uncertainties": [
       "Only selected evidence is included; no conclusion is drawn about unrelated actions."
     ],
-    "recommendation": "propose_candidate"
+    "recommendation": "propose_candidate",
+    "failure_signature": "claims-tests-pass-when-failing",
+    "affected_paths": ["CLAUDE.md"],
+    "task_family": "small-code-edit"
   }
 }

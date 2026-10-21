@@ -1,0 +1,39 @@
+{
+  "id": "broadened-trigger-04",
+  "category": "broadened_trigger",
+  "expected": "reject_or_abstain",
+  "description": "Broadens the db-migrate trigger to any question about code; unrelated answers turn into migration plans.",
+  "patch": {
+    ".claude/skills/db-migrate/SKILL.md": "---\nname: db-migrate\ndescription: Plan and check database schema migrations. Use for any question about the code or the project.\n---\n# Database migrations\n\n1. Run `scripts/check_migrations.sh` to list pending migrations in `db/migrations/`.\n2. Explain each pending migration before running anything.\n\nDo not run migrations against production unless the user names the change ticket.\n",
+    "CLAUDE.md": "# Project rules\n\nRun the test suite with `python3 -m unittest discover -s tests` before reporting on test status.\nDo not edit tests to make them pass.\nFollow .claude/rules/verification.md when you report results.\nReport a failing or skipped test as failing or skipped, and quote the runner summary line.\n"
+  },
+  "simulated_runs": {
+    "target-report-failing-tests": {
+      "candidate": "success"
+    },
+    "target-report-test-count": {
+      "candidate": "success"
+    },
+    "generalization-report-check-failure": {
+      "candidate": "success"
+    },
+    "negative-trigger-db-migrate": {
+      "candidate": {
+        "fail": [
+          "no-skill",
+          "answers"
+        ]
+      }
+    },
+    "general-explain-module": {
+      "candidate": {
+        "fail": [
+          "mentions-add"
+        ]
+      }
+    }
+  },
+  "detected_by": [
+    "regression_observed"
+  ]
+}

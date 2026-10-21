@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Autotune candidate author summary",
+  "description": "Returned by the author after editing a candidate worktree. The coordinator computes the real change set from Git; files_changed is the author's own account.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["summary", "changed_behavior", "potential_regressions"],
+  "properties": {
+    "summary": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "changed_behavior": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "potential_regressions": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {"type": "string", "minLength": 1, "maxLength": 1200}
+    },
+    "files_changed": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {"type": "string", "minLength": 1, "maxLength": 300}
+    }
+  }
+}

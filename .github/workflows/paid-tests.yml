@@ -1,0 +1,128 @@
+# Paid tests: real model calls, run by hand only.
+#
+# This workflow has not been run yet. It never runs on pull_request or push, so credentials are never exposed to
+# untrusted code. The "paid-tests" environment must be configured as protected (required reviewers, limited to the
+# default branch) and holds the only secret it uses:
+#
+#   CLAUDE_CODE_OAUTH_TOKEN  a subscription token from `claude setup-token`. Autotune's adapter strips
+#                            ANTHROPIC_API_KEY and other provider variables from the processes it starts, so an API
+#                            key would not reach the live mutation runner.
+#
+# Results stay on the runner unless upload_results is set. They come from the synthetic fixture harness and the
+# empty eval workspace, but check them before sharing; nothing here publishes a report.
+#
+# The live mutation runner (`autotune mutations --live --budget-calls N`) is the cycle 3 CLI interface; see
+# benchmarks/mutations/ and docs/OPERATIONS.md.
+
+name: paid-tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_plugin_evals:
+        description: Run the native plugin eval suite in evals/
+        type: boolean
+        default: true
+      eval_ablation:
+        description: "Arms for the plugin eval: baseline (with and without the plugin) or none (plugin arm only)"
+        type: choice
+        options: [baseline, none]
+        default: baseline
+      run_mutations:
+        description: Run the gate mutation set in live mode
+        type: boolean
+        default: false
+      mutation_budget_calls:
+        description: Maximum model calls for the live mutation run (required when run_mutations is set)
+        type: string
+        default: "0"
+      upload_results:
+        description: Upload result files as a workflow artifact (kept 7 days)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: paid-tests
+  cancel-in-progress: false
+
+jobs:
+  paid:
+    runs-on: ubuntu-latest
+    environment: paid-tests
+    timeout-minutes: 120
+    steps:
+      - name: Check inputs
+        env:
+          RUN_MUTATIONS: ${{ inputs.run_mutations }}
+          BUDGET: ${{ inputs.mutation_budget_calls }}
+        run: |
+          case "$BUDGET" in
+            ''|*[!0-9]*) echo "::error::mutation_budget_calls must be a whole number"; exit 1 ;;
+          esac
+          if [ "$RUN_MUTATIONS" = "true" ] && [ "$BUDGET" -le 0 ]; then
+            echo "::error::run_mutations needs mutation_budget_calls above 0"
+            exit 1
+          fi
+
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Claude Code 2.1.306
+        run: npm install -g @anthropic-ai/claude-code@2.1.306
+
+      - name: Set a Git identity for the fixture repositories
+        run: |
+          git config --global user.name "Autotune CI"
+          git config --global user.email "ci@example.invalid"
+          git config --global init.defaultBranch main
+
+      - name: Plugin eval suite
+        if: ${{ inputs.run_plugin_evals }}
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          ABLATION: ${{ inputs.eval_ablation }}
+        run: |
+          if [ "$ABLATION" = "none" ]; then
+            claude plugin eval . --no-publish --trust-plugin --ablation none
+          else
+            claude plugin eval . --no-publish --trust-plugin
+          fi
+
+      - name: Gate mutation set, live
+        if: ${{ inputs.run_mutations }}
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          AUTOTUNE_HOME: ${{ runner.temp }}/autotune-home
+          BUDGET: ${{ inputs.mutation_budget_calls }}
+        # bash here runs with pipefail, so a failing runner fails the step despite tee.
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/mutation-results"
+          python3 -m autotune mutations --set benchmarks/mutations --live --budget-calls "$BUDGET" \
+            | tee "$RUNNER_TEMP/mutation-results/summary.txt"
+
+      - name: Upload results
+        if: ${{ always() && inputs.upload_results }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: paid-test-results
+          path: |
+            evals/results/
+            ${{ runner.temp }}/mutation-results/
+          if-no-files-found: ignore
+          retention-days: 7

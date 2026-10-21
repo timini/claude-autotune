@@ -23,7 +23,10 @@
     "strengths": {"type": "array", "maxItems": 8, "items": {"$ref": "#/$defs/finding"}},
     "improvements": {"type": "array", "maxItems": 8, "items": {"$ref": "#/$defs/finding"}},
     "uncertainties": {"type": "array", "maxItems": 12, "items": {"type": "string", "minLength": 1, "maxLength": 1200}},
-    "recommendation": {"enum": ["no_change", "investigate", "propose_candidate"]}
+    "recommendation": {"enum": ["no_change", "investigate", "propose_candidate"]},
+    "failure_signature": {"type": ["string", "null"], "pattern": "^[a-z0-9][a-z0-9-]{2,79}$"},
+    "affected_paths": {"type": "array", "maxItems": 20, "items": {"type": "string", "minLength": 1, "maxLength": 300}},
+    "task_family": {"type": ["string", "null"], "pattern": "^[a-z0-9][a-z0-9-]{2,79}$"}
   },
   "$defs": {
     "evidenceIds": {

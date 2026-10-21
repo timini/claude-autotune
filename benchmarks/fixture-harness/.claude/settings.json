@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "deny": ["Bash(git push --force*)", "Bash(rm -rf *)"]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {"matcher": "Bash", "hooks": [{"type": "command", "command": ".claude/hooks/guard.sh"}]}
+    ]
+  }
+}
