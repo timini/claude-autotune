@@ -31,7 +31,7 @@ Deliverables:
 - Compatibility probe for session transitions, top-level turn IDs, skill events, instruction-load observation, and middleware return behavior on Claude Code 2.1.306.
 - A short ingress process that starts a detached Python worker and returns promptly.
 - Tested CLI profiles for a tool-free reviewer, scoped editor, and full-harness replay, using supported subscription authentication.
-- A local replay profile demonstrating which project and user customizations load. Confirm that the full harness is active and Continua cannot recursively learn from the run.
+- A local replay profile demonstrating which project and user customizations load. Confirm that the full harness is active and Autotune cannot recursively learn from the run.
 - A field-level editable/executable policy for project settings and MCP configuration.
 
 Exit criteria:

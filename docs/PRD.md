@@ -1,12 +1,12 @@
 # Product requirements
 
-Status: implementation specification. Research date: 21 October 2026. Product name: **Continua**.
+Status: implementation specification. Research date: 21 October 2026. Product name: **Autotune**.
 
 ## 1. Problem and intended outcome
 
 Claude Code sessions contain useful evidence about the agent's behavior: corrections from the user, successful procedures, repeated mistakes, unnecessary tool calls, missing tests, and skills that overlap. That evidence usually disappears into transcripts or accumulates as increasingly long instructions.
 
-Continua should turn this evidence into tested improvements to the project harness. The user should continue working normally while a background process reviews the completed response, records its reasoning, and evaluates useful changes. Accepted changes should preserve earlier successes, reduce repeated failures, and keep skills coherent.
+Autotune should turn this evidence into tested improvements to the project harness. The user should continue working normally while a background process reviews the completed response, records its reasoning, and evaluates useful changes. Accepted changes should preserve earlier successes, reduce repeated failures, and keep skills coherent.
 
 A stored rating is an observation, not proof that a change will help. The product must connect an observation to a concrete hypothesis, an actual Git change, and comparative evaluation results.
 
@@ -23,7 +23,7 @@ A stored rating is an observation, not proof that a change will help. The produc
 | History | Standard Git commits, branches, diffs, and revert |
 | Evidence | Local SQLite database, with Git SHA references |
 | Replays | Local disposable Git worktrees and controlled commands; Docker is not required |
-| Distribution | Public repository `timini/claude-continua`; installable plugin is a later deliverable |
+| Distribution | Public repository `timini/claude-autotune`; installable plugin is a later deliverable |
 | Initial support | Claude Code CLI on macOS and Linux; compatibility baseline 2.1.306 |
 
 Separate processes avoid sharing conversational context. They do not make models from the same family statistically independent.
@@ -32,23 +32,23 @@ Separate processes avoid sharing conversational context. They do not make models
 
 ### Daily development
 
-The user completes a coding response. Continua records the intent, relevant constraints, actions, observable results, and harness files that were actually loaded. A short background review identifies strengths and improvements, or reports insufficient evidence. A quiet status indicator shows pending work without adding another message to every response.
+The user completes a coding response. Autotune records the intent, relevant constraints, actions, observable results, and harness files that were actually loaded. A short background review identifies strengths and improvements, or reports insufficient evidence. A quiet status indicator shows pending work without adding another message to every response.
 
 ### Repeated error
 
-Two independent tasks show the agent editing generated files instead of their source. Continua proposes a narrowly scoped instruction, creates a regression case that checks the source file, and replays both the current and proposed harness from the same fixture. The candidate must also preserve unrelated successful behavior. A qualifying change is committed when the target branch and checkout meet the application checks.
+Two independent tasks show the agent editing generated files instead of their source. Autotune proposes a narrowly scoped instruction, creates a regression case that checks the source file, and replays both the current and proposed harness from the same fixture. The candidate must also preserve unrelated successful behavior. A qualifying change is committed when the target branch and checkout meet the application checks.
 
 ### Successful procedure
 
-The agent discovers an effective repository-specific diagnostic procedure. Continua checks whether an existing skill already covers it. It adds only the missing procedure, or records the success without editing. The known success becomes a candidate regression case after its outcome has been independently checked.
+The agent discovers an effective repository-specific diagnostic procedure. Autotune checks whether an existing skill already covers it. It adds only the missing procedure, or records the success without editing. The known success becomes a candidate regression case after its outcome has been independently checked.
 
 ### Skill consolidation
 
-Several skills cover variants of the same workflow. Continua proposes a merge that preserves distinct trigger conditions, exceptions, references, scripts, and templates. Evaluation covers the union of the original skills' tasks and negative trigger cases. A shorter skill that loses an important exception fails.
+Several skills cover variants of the same workflow. Autotune proposes a merge that preserves distinct trigger conditions, exceptions, references, scripts, and templates. Evaluation covers the union of the original skills' tasks and negative trigger cases. A shorter skill that loses an important exception fails.
 
 ### Later regression
 
-A later session appears to violate behavior preserved by a prior change. Continua links the observation to the relevant applied commit, attempts reproduction, and tests a Git revert where possible. Confirmed regressions can trigger a revert under the same clean-checkout rules. An unverified low rating alone does not revert work.
+A later session appears to violate behavior preserved by a prior change. Autotune links the observation to the relevant applied commit, attempts reproduction, and tests a Git revert where possible. Confirmed regressions can trigger a revert under the same clean-checkout rules. An unverified low rating alone does not revert work.
 
 ## 4. Functional requirements
 
@@ -76,7 +76,7 @@ An episode is one completed response plus the context needed to understand it. A
 | F11 | Support a no-change result | Good performance, insufficient evidence, and an existing adequate rule can all end a review without an edit |
 | F12 | Edit through Claude Code | A separate authoring process receives an explicit scope and writes only within a disposable worktree |
 | F13 | Cover the project harness | Existing project instructions and skills may be edited; learning is not restricted to generated skills |
-| F14 | Protect the evaluator | Candidates cannot change Continua's controller, rubrics, gates, trusted graders, budget, or editable-path policy |
+| F14 | Protect the evaluator | Candidates cannot change Autotune's controller, rubrics, gates, trusted graders, budget, or editable-path policy |
 | F15 | Evaluate before applying | Static validation, paired outcome tests, and the applicable regression suite all pass |
 | F16 | Apply with Git | Accepted patches create ordinary Git commits; the database references commits without storing a parallel harness history |
 | F17 | Preserve user work | Dirty checkouts, changed HEAD, conflicts, or known active turns defer application; no automatic stash, reset, or forced checkout |
@@ -105,7 +105,7 @@ Enrollment selects repository-relative paths. Initial suggestions are `CLAUDE.md
 
 The configured scope may include executable harness components. Before automatic application, their commands and dependency surfaces must match the enrolled execution policy and have relevant local tests. Adding a new executable, network destination, dependency source, or capability outside that policy produces `needs_scope_change`, not silent expansion. The initial enrollment is sufficient authorization for changes inside the defined scope; there is no routine approval prompt for each qualifying edit.
 
-Excluded from automatic edits: credentials, global user settings, organization policy, application source unrelated to the harness, Git configuration/hooks, and Continua's own decision machinery. Project files are treated as data during review and authoring; their instructions cannot authorize changing these exclusions.
+Excluded from automatic edits: credentials, global user settings, organization policy, application source unrelated to the harness, Git configuration/hooks, and Autotune's own decision machinery. Project files are treated as data during review and authoring; their instructions cannot authorize changing these exclusions.
 
 ## 6. Defaults to validate during implementation
 
@@ -148,7 +148,7 @@ Measure three different outcomes:
 2. **Decision quality:** judge agreement with independently labeled cases, false acceptance of known regressions, appropriate abstention, and trace citation validity.
 3. **User benefit:** task success on held-out tasks, recurrence of specific mistakes, retained known successes, total tokens/time including learning, useful skill retrieval, and revert frequency.
 
-Judge score increases are diagnostic only. The release study must compare Continua with a fixed harness, review-only operation, skill-only learning, and an equal-compute alternative. Proposed numerical release gates and the analysis method are in [Evaluation](EVALUATION.md).
+Judge score increases are diagnostic only. The release study must compare Autotune with a fixed harness, review-only operation, skill-only learning, and an equal-compute alternative. Proposed numerical release gates and the analysis method are in [Evaluation](EVALUATION.md).
 
 ## 9. Non-goals for v1
 

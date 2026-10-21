@@ -101,7 +101,7 @@ An expired lease returns to eligible queued work after reconciliation. `succeede
 
 ## 6. Proposed configuration
 
-Tracked `.continua.json` holds non-secret product policy. Local state and authentication stay outside the repository. Initial fields:
+Tracked `.autotune.json` holds non-secret product policy. Local state and authentication stay outside the repository. Initial fields:
 
 ```json
 {
@@ -138,16 +138,16 @@ Model selections are resolved during setup and stored in non-secret configuratio
 
 | Command | Intended behavior |
 |---|---|
-| `/continua status` | Latest review, queue, usage, application and activation state |
-| `/continua review <episode>` | Scores, strengths, improvements, evidence coverage |
-| `/continua candidate <id>` | Hypothesis, Git diff, required cases, actual results |
-| `/continua enable` | Validate/setup project enrollment and start capture |
-| `/continua pause` | Stop new learning dispatch and automatic application; keep existing records |
-| `/continua resume` | Resume the existing enrollment |
-| `/continua retry` | Recheck eligible blocked work; never force acceptance |
-| `/continua consolidate` | Queue a consolidation analysis through normal gates |
-| `/continua revert <candidate>` | Prepare and validate an ordinary Git revert |
-| `/continua purge` | Explicitly remove selected local evidence with visible scope |
+| `/autotune status` | Latest review, queue, usage, application and activation state |
+| `/autotune review <episode>` | Scores, strengths, improvements, evidence coverage |
+| `/autotune candidate <id>` | Hypothesis, Git diff, required cases, actual results |
+| `/autotune enable` | Validate/setup project enrollment and start capture |
+| `/autotune pause` | Stop new learning dispatch and automatic application; keep existing records |
+| `/autotune resume` | Resume the existing enrollment |
+| `/autotune retry` | Recheck eligible blocked work; never force acceptance |
+| `/autotune consolidate` | Queue a consolidation analysis through normal gates |
+| `/autotune revert <candidate>` | Prepare and validate an ordinary Git revert |
+| `/autotune purge` | Explicitly remove selected local evidence with visible scope |
 
 Pausing and cancelling are distinct: pause prevents new dispatch; cancel terminates the selected running process group. Setup, destructive evidence purging, and any scope expansion need an explicit user action. Ordinary scoped accepted edits do not need repeated approval. Final command syntax should be verified against native command registration during M0.
 

@@ -37,7 +37,7 @@ Planned package layout:
 hooks/hooks.json                 # modules: ["./register.ts"]
 hooks/register.ts                # literal event registrations
 hooks/register.test.ts
-continua/                       # Python worker package
+autotune/                       # Python worker package
 prompts/                        # reviewer, author, judge, curator
 schemas/                        # data contracts
 tests/                          # Python tests and synthetic fixtures
@@ -49,7 +49,7 @@ These paths describe the future plugin. They are not present as functioning comp
 
 Register literal events and use documented mod APIs; do not assume Node APIs are available inside the mod. The [native mod reference](https://code.claude.com/docs/en/plugins/mods/reference) supplies event contracts, while the [mods API](https://code.claude.com/docs/en/plugins/mods/api) supplies session and subprocess access.
 
-| Event | Continua action |
+| Event | Autotune action |
 |---|---|
 | `classic.SessionStart` | Associate session ID, transcript path, working directory, and lifecycle source; reset capture on clear/resume/branch |
 | `turn.start` | Record task text, turn identity, and foreground activity |
@@ -59,7 +59,7 @@ Register literal events and use documented mod APIs; do not assume Node APIs are
 | `tool.call` | Optionally capture bounded result metadata after `next(e)` returns |
 | `session.end` | Best-effort final activity update; do not launch long model work here |
 
-Ignore subagent completions as independent triggers; their useful results can remain evidence in the parent episode. Ignore sessions marked as Continua review, edit, judge, or replay work. Preserve `next(e)` behavior and return values exactly. Capture failures must not turn a successful user response into an error.
+Ignore subagent completions as independent triggers; their useful results can remain evidence in the parent episode. Ignore sessions marked as Autotune review, edit, judge, or replay work. Preserve `next(e)` behavior and return values exactly. Capture failures must not turn a successful user response into an error.
 
 Use `classic.SessionStart` for session transitions: native `session.start` alone is insufficient for clear/resume handling. Verify exact event fields against the installed types; use explicit end reasons where available, with a tested compatibility adapter for older abortion fields.
 
@@ -84,7 +84,7 @@ If the enqueue acknowledgement is lost, retry the same identity. If ingress exce
 
 ## 4. Worker and queue
 
-The worker is a detached, on-demand process. It exits after a short idle period. New ingress, session startup, or `/continua retry` wakes it. It can finish queued work after the parent Claude process closes; no always-on OS daemon is needed initially. Machine shutdown or sleep pauses progress until the next wake.
+The worker is a detached, on-demand process. It exits after a short idle period. New ingress, session startup, or `/autotune retry` wakes it. It can finish queued work after the parent Claude process closes; no always-on OS daemon is needed initially. Machine shutdown or sleep pauses progress until the next wake.
 
 Use SQLite WAL on a local filesystem, short write transactions, a busy timeout, and bounded retries. A job lease has an expiry and heartbeat. Never hold a database transaction across a model call, Git operation, or test run. See [SQLite WAL](https://www.sqlite.org/wal.html) for the concurrency constraints.
 
@@ -100,7 +100,7 @@ Exactly-once external model execution is not promised. An interrupted request ma
 
 ## 5. Local storage
 
-Default data directory: `~/.claude/continua/<project-id>/`, with restrictive filesystem permissions. Compute project identity from the canonical Git common-directory path. Worktrees of the same repository share evidence, but branch and base commit scope each experiment. Do not use a remote URL containing credentials as an identifier. Moving the repository requires explicit reassociation or a new local evidence store.
+Default data directory: `~/.claude/autotune/<project-id>/`, with restrictive filesystem permissions. Compute project identity from the canonical Git common-directory path. Worktrees of the same repository share evidence, but branch and base commit scope each experiment. Do not use a remote URL containing credentials as an identifier. Moving the repository requires explicit reassociation or a new local evidence store.
 
 | Table | Main purpose and fields |
 |---|---|
@@ -157,9 +157,9 @@ stateDiagram-v2
 ```
 
 1. Select a clean committed base. If the source checkout has relevant uncommitted harness edits, defer candidate generation; do not create a hidden commit of the user's work.
-2. Create `continua/<candidate-id>` and a disposable worktree with ordinary Git commands.
+2. Create `autotune/<candidate-id>` and a disposable worktree with ordinary Git commands.
 3. Give the author one supported hypothesis and the allowed paths. Inspect the resulting diff, file types, symlinks, config fields, executable/dependency changes, and support-file links.
-4. Commit the candidate with a unique `Continua-Candidate` trailer. Tests compare this commit with the exact base.
+4. Commit the candidate with a unique `Autotune-Candidate` trailer. Tests compare this commit with the exact base.
 5. Gate the candidate using the evaluation policy below. Save the decision and all run references.
 6. Before application, acquire the application lock and recheck branch, HEAD, scope/policy, evaluator identity, clean index/worktree, and known foreground activity. A change to any prerequisite invalidates or defers application.
 7. Apply the single evaluated commit using a normal fast-forward merge when HEAD still equals its base. Never auto-rebase an evaluated candidate onto a new base. A changed base needs a new comparison.
@@ -167,13 +167,13 @@ stateDiagram-v2
 
 Git worktrees share repository metadata; they are not independent repositories or sandboxes. Replay workers must not receive writable access to the coordinator's Git control files through tool permissions, and trusted test commands must not alter branches/refs. [Git worktree documentation](https://git-scm.com/docs/git-worktree.html)
 
-The worker lock coordinates Continua processes. It cannot lock an unrelated editor or arbitrary shell process. Repeat checks immediately before application and verify the result afterward. Do not claim atomic exclusion of all external edits. Unexpected state enters recovery and suspends further application; never overwrite files to repair it. A short quiet interval may delay **application**, but never delays the review trigger.
+The worker lock coordinates Autotune processes. It cannot lock an unrelated editor or arbitrary shell process. Repeat checks immediately before application and verify the result afterward. Do not claim atomic exclusion of all external edits. Unexpected state enters recovery and suspends further application; never overwrite files to repair it. A short quiet interval may delay **application**, but never delays the review trigger.
 
 If a known regression is reproduced, prepare `git revert` in an isolated branch, validate it, and apply with the same checks. If later edits conflict, leave a proposed revert and explain the blocker. No hard resets, hidden stashes, or automatic target-repository pushes.
 
 ## 8. Full-harness local replay
 
-The native `claude plugin eval` runner deliberately omits project-level customizations. Use it for Continua's packaged plugin behavior. A separate replay runner must reconstruct and load the entire project harness for candidate comparisons. [Official plugin eval isolation](https://code.claude.com/docs/en/plugin-evals#how-runs-are-isolated)
+The native `claude plugin eval` runner deliberately omits project-level customizations. Use it for Autotune's packaged plugin behavior. A separate replay runner must reconstruct and load the entire project harness for candidate comparisons. [Official plugin eval isolation](https://code.claude.com/docs/en/plugin-evals#how-runs-are-isolated)
 
 For each case, materialize identical task files and distinct baseline/candidate harness commits in disposable worktrees. The task fixture identifies its source commit; the runner overlays only the nominated harness paths from each arm. Record both identities. This avoids comparing a past trajectory on old application code with a fresh run on new code.
 
@@ -193,6 +193,6 @@ Applied content may not be immediately active in an existing conversation. Track
 
 ## 10. Operational visibility
 
-Keep a quiet status line and a `/continua` command surface. Show latest review, queue state, experiment progress, accepted changes, deferred activation, actual Git diff, measured usage, and unresolved coverage. Notifications are for applied changes and actionable failures, not every routine review.
+Keep a quiet status line and a `/autotune` command surface. Show latest review, queue state, experiment progress, accepted changes, deferred activation, actual Git diff, measured usage, and unresolved coverage. Notifications are for applied changes and actionable failures, not every routine review.
 
 Retain redacted evidence locally with bounded sizes and expiry. Purging evidence must leave reviews visibly unverifiable where their supporting excerpts were deleted. Private evidence never enters the public plugin repository automatically. Exporting fixtures requires separate explicit selection and redaction.

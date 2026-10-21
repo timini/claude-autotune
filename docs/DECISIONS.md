@@ -4,7 +4,7 @@ These decisions reflect the requested product. They are not open questions for t
 
 | Decision | Rationale |
 |---|---|
-| **Continua**, public `timini/claude-continua` repository | Selected name and publication scope |
+| **Autotune**, public `timini/claude-autotune` repository | Selected name and publication scope |
 | Review every completed top-level response | A pause within a session is a learning boundary; session end alone is too infrequent |
 | Use a native Claude Code mod | Observe turn and skill events directly; keep lifecycle integration small |
 | Separate background worker | Reviews and experiments can outlive the parent process without blocking the user |
@@ -34,7 +34,7 @@ These are implementation experiments, not requests for more product decisions.
 5. Demonstrate that the replay runner loads the entire intended harness and excludes unrelated customization.
 6. Validate local permission/command restrictions against ordinary accidental access. Local execution does not provide an adversarial security boundary.
 7. Establish real judge agreement, mutation rejection, runtime/cost distributions, and practical sample sizes.
-8. Test concurrent editor/terminal races around Git application. Cooperating Continua locks do not lock unrelated tools.
+8. Test concurrent editor/terminal races around Git application. Cooperating Autotune locks do not lock unrelated tools.
 
 ## Explicitly deferred
 

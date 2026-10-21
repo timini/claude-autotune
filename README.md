@@ -1,10 +1,10 @@
-# Continua
+# Autotune
 
 **A proposed Claude Code mod that reviews every finished response, tests improvements to the project harness, and consolidates skills over time.**
 
 Status: research and implementation specification, dated **21 October 2026**. This repository contains documentation and synthetic examples. The plugin is not implemented yet.
 
-Continua combines retrospective harness improvement, persistent evaluation evidence, and continuous skill consolidation. It uses Claude Code for reviews, judging, and edits. **Git handles change history and rollback. SQLite records reviews, experiments, outcomes, and the Git commits involved.**
+Autotune combines retrospective harness improvement, persistent evaluation evidence, and continuous skill consolidation. It uses Claude Code for reviews, judging, and edits. **Git handles change history and rollback. SQLite records reviews, experiments, outcomes, and the Git commits involved.**
 
 ## Intended behavior
 
@@ -32,12 +32,12 @@ Reviews happen on **every finished response**, including a pause within a longer
 
 ## What already exists?
 
-[RHO](https://github.com/wbopan/retro-harness) is the closest precedent for retrospective harness optimization. [Tigerless AutoHarness](https://github.com/tigerless-labs/autoharness) provides direct inspiration for continual skill extraction and consolidation. [Hermitd](https://github.com/gtapps/hermitd) separates reflection from evidence judging, and [Kayba AutoHarness](https://github.com/kayba-ai/autoharness) connects harness changes to benchmark results. Continua's proposed contribution is their integration into a bounded, per-response workflow with a persistent record of attempted changes and observed regressions. This is a product design, not a claim that self-improving harnesses are new.
+[RHO](https://github.com/wbopan/retro-harness) is the closest precedent for retrospective harness optimization. [Tigerless AutoHarness](https://github.com/tigerless-labs/autoharness) provides direct inspiration for continual skill extraction and consolidation. [Hermitd](https://github.com/gtapps/hermitd) separates reflection from evidence judging, and [Kayba AutoHarness](https://github.com/kayba-ai/autoharness) connects harness changes to benchmark results. Autotune's proposed contribution is their integration into a bounded, per-response workflow with a persistent record of attempted changes and observed regressions. This is a product design, not a claim that self-improving harnesses are new.
 
 ## Deliberate constraints
 
 - Claude Code first, using separate CLI processes and the user's configured subscription. Other provider adapters can follow.
-- Whole **project** harness scope, with explicit editable paths; no automatic changes to global account settings or Continua's own judge and controller.
+- Whole **project** harness scope, with explicit editable paths; no automatic changes to global account settings or Autotune's own judge and controller.
 - Local replays in disposable worktrees. **No Docker dependency.** Worktrees are not a security boundary: approved hooks and scripts run with the local user's access.
 - One experiment at a time; cheap reviews at every pause; heavier validation can wait.
 - No custom harness versioning, vector database, hosted service, or dashboard in v1.

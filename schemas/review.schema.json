@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Continua proposed review result",
+  "title": "Autotune proposed review result",
   "description": "Shape validation only; evidence references require separate application validation.",
   "type": "object",
   "additionalProperties": false,

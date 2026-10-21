@@ -10,7 +10,7 @@ __pycache__/
 *.sqlite-shm
 *.sqlite3-wal
 *.sqlite3-shm
-.continua-local/
+.autotune-local/
 evals/results/
 benchmarks/results/
 private-evidence/

@@ -8,7 +8,7 @@ Prefer externally checked outcomes to claims in a transcript. Keep a capability 
 
 Compare baseline and candidate under the same environment and resource limits. Record infrastructure failures separately: [Anthropic's infrastructure experiments](https://www.anthropic.com/research/infrastructure-noise) show that environment differences can materially change benchmark outcomes.
 
-Use held-out tasks and matched-compute comparisons. [Rethinking the Evaluation of Harness Evolution for Agents](https://arxiv.org/abs/2607.12227) reports limited coding-task transfer and competitive simpler baselines. Continua must earn its extra inference cost through measured benefit.
+Use held-out tasks and matched-compute comparisons. [Rethinking the Evaluation of Harness Evolution for Agents](https://arxiv.org/abs/2607.12227) reports limited coding-task transfer and competitive simpler baselines. Autotune must earn its extra inference cost through measured benefit.
 
 ## 2. Test layers
 
@@ -22,7 +22,7 @@ Use held-out tasks and matched-compute comparisons. [Rethinking the Evaluation o
 | Candidate replay gate | Before each automatic harness application | Does this patch improve its target while preserving tested behavior? | Real, bounded |
 | Held-out release study | Before effectiveness claims | Does the learning system transfer and justify its cost? | Real, separately budgeted |
 
-The native runner's project isolation makes it unsuitable as the sole full-harness test. `claude plugin eval` excludes project configuration even when scaffolded. Use it for the distributed plugin and use Continua's separate runner for project-harness comparisons. Run with `--no-publish`; only intentionally sanitized reports should be published. See [plugin eval documentation](https://code.claude.com/docs/en/plugin-evals).
+The native runner's project isolation makes it unsuitable as the sole full-harness test. `claude plugin eval` excludes project configuration even when scaffolded. Use it for the distributed plugin and use Autotune's separate runner for project-harness comparisons. Run with `--no-publish`; only intentionally sanitized reports should be published. See [plugin eval documentation](https://code.claude.com/docs/en/plugin-evals).
 
 ## 3. Mechanical test matrix
 
@@ -30,7 +30,7 @@ The native runner's project isolation makes it unsuitable as the sole full-harne
 
 - Duplicate completion delivery creates one episode and one review job.
 - Clear, resume, branch, plugin reload, parent exit, and compaction preserve boundaries without mixing sessions.
-- Child-agent and Continua-generated completions do not trigger another learning cycle.
+- Child-agent and Autotune-generated completions do not trigger another learning cycle.
 - Empty responses, refusals, cancellations, tool failures, missing outcomes, and unsupported media remain valid partial episodes.
 - A session exceeding the normalized-history limit records omissions explicitly.
 - The final answer is captured once whether or not it already appears in session history.
@@ -176,10 +176,10 @@ Use the same task stream and starting harness for five arms:
 | Fixed harness | Baseline task performance |
 | Review only | Check whether observation itself changes anything and measure review overhead |
 | Skill learning/consolidation only | Isolate the Tigerless-inspired contribution |
-| Full Continua | Test broader harness edits and consolidation together |
+| Full Autotune | Test broader harness edits and consolidation together |
 | Fixed harness with matched extra attempts | Test whether spending the same compute directly on tasks is better |
 
-The skill-only arm is a Continua ablation, not a benchmark claim about the external Tigerless implementation. Separately reproducing RHO or Tigerless requires their documented setup and a matched budget.
+The skill-only arm is a Autotune ablation, not a benchmark claim about the external Tigerless implementation. Separately reproducing RHO or Tigerless requires their documented setup and a matched budget.
 
 Run an initial pilot on 20 independent tasks from at least four families, with two trials per arm, to estimate variance and costs. Do not use the pilot to claim generalization. Predeclare the subsequent held-out sample using pilot variance and a power calculation. Use a task-family split and a chronological split to test transfer to future work. Train/adapt only on the earlier stream; freeze the resulting harness when evaluating a sealed holdout, or explicitly label an online-adaptation experiment as a different study.
 
