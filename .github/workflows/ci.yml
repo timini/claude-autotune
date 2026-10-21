@@ -1,8 +1,5 @@
 # Mechanical CI: deterministic tests, JSON checks, plugin validation and the native mod tests.
 #
-# This workflow has not been run on GitHub yet. Its test, JSON, validate and plugin test commands were run locally
-# on macOS (see docs/RELEASE_EVIDENCE.md); the npm install of the CLI was not.
-#
 # It uses no secrets and makes no model calls. Python tests use the fake Claude CLI in tests/fake_claude.py;
 # `claude plugin validate` and `claude plugin test` run without signing in.
 #

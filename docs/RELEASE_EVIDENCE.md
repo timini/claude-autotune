@@ -14,7 +14,7 @@ against the uncommitted working tree after cycle 3. Re-run them on the release c
 | Release commit | planned (not tagged) | `git rev-parse HEAD` |
 | Claude Code CLI | 2.1.306 | `claude --version` |
 | Platforms tested locally | macOS 26.6.2 (Darwin 25.6.0, arm64) | development machine |
-| Platforms in CI | **planned**: ubuntu-latest and macos-latest with Python 3.11 and 3.13; `.github/workflows/ci.yml` is written and has not run on GitHub | GitHub Actions |
+| Platforms in CI | ubuntu-latest and macos-latest with Python 3.11 and 3.13 all pass (run 39685368942 on commit b59cfb1, 21 October 2026) | GitHub Actions |
 | Python | 3.15.0 and 3.11.16: full suite passes on both | `python3 --version` |
 | Git, SQLite | Git 2.50.1; SQLite library 3.54.1 (Python 3.15); `sqlite3` CLI 3.51.0 | `git --version`, `python3 -c "import sqlite3; print(sqlite3.sqlite_version)"` |
 

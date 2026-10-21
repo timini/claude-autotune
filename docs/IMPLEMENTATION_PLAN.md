@@ -341,8 +341,8 @@ Exit criteria:
 - Mechanics release thresholds pass.
   - passed (fake CLI): the full suite, 879 tests, on Python 3.15.0 and 3.11.16 on macOS. `claude plugin test .`
     28 of 28. `claude plugin validate .` passes with warnings.
-  - planned: CI on ubuntu-latest and macos-latest with Python 3.11 and 3.13. `.github/workflows/ci.yml` is written
-    and has not run on GitHub.
+  - passed (CI): ubuntu-latest and macos-latest with Python 3.11 and 3.13 all pass on GitHub Actions
+    (run 39685368942 on commit b59cfb1, 21 October 2026).
 - Gate release thresholds pass.
   - passed (fake CLI): simulated mutation run,
     `tests.test_mutations.SimulatedSuiteTest.test_every_release_criterion_is_met`: 40 harmful with 0 false accepts,
@@ -401,7 +401,7 @@ Evidence not yet collected:
   the gate (rejected, `target_not_met`); a live accepted candidate followed by apply has not been run.
 - Task family matching is exact. The reviewer is now given the families of the committed cases; a reviewer that
   still invents a new slug gives `no_required_cases` (inconclusive), which is safe but wastes the author call.
-- CI on GitHub. The workflow is written and has not run. `tsc` is not run in CI, because the mod types file
+- `tsc` is not run in CI, because the mod types file
   (`claude-code.d.ts`) is only produced by an interactive session; it runs locally.
 - M0 live checks: two interactive responses with clear and resume; a changed project hook firing only in replay.
   There is no reusable compatibility probe script.
