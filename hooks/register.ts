@@ -749,7 +749,7 @@ export const register: Register = on => {
           await $.command.register({
             name: 'autotune',
             description: 'Autotune status, reviews, candidates and controls',
-            argumentHint: '[status|review [id]|candidate [id]|apply <id>|revert <id>|consolidate|pause|resume|retry|cancel <job>|purge|enable|doctor]',
+            argumentHint: '[status|review [id]|candidate [id]|apply <id>|revert <id>|consolidate|calibrate|mutations|export <episode>|uninstall|pause|resume|retry|cancel <job>|purge|enable|doctor]',
           })
         } catch {
           // The command is a convenience; the session goes on without it.

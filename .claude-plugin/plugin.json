@@ -1,5 +1,8 @@
 {
   "name": "autotune",
   "version": "0.1.0",
-  "description": "Reviews each finished response in the background and records evidence for tested harness improvements"
+  "description": "Reviews each finished response in the background and records evidence for tested harness improvements",
+  "author": { "name": "Tim Richardson" },
+  "repository": "https://github.com/timini/claude-autotune",
+  "license": "MIT"
 }

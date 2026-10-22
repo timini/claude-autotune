@@ -24,14 +24,14 @@ against the uncommitted working tree after cycle 3. Re-run them on the release c
 |---|---|---|
 | Unit and fake-CLI integration tests | 879 passed on Python 3.15.0 (274 s) and 879 passed on Python 3.11.16 (274 s); no model calls | `python3 -m unittest discover -s tests -t .` |
 | Native mod tests | 28 of 28 passed | `claude plugin test .` |
-| Plugin validation | passed with warnings: no author in plugin.json; the plugin directory checks report LICENSE_MISSING (the directory would refuse a submission) and ICON_MISSING; README advice about the marketplace install line, which stays until `<owner>/<repo>` is a published name | `claude plugin validate .` |
+| Plugin validation | passed with one warning: ICON_MISSING (plugin directory check only). The manifest has an author and the MIT license; the marketplace manifest validates | `claude plugin validate .` |
 | Type check of hooks/register.ts | clean (local only; CI skips it, see the comment in ci.yml) | `npx -y -p typescript@5.6.3 tsc -p <tsconfig including claude-code.d.ts and hooks/>` |
 | JSON validity of schemas and examples | passed | the "JSON files parse" step in ci.yml |
 | Retention | passed (fake CLI): evidence expiry, result detail expiry, candidate branch deletion | `python3 -m unittest tests.test_store_retention tests.test_cli_cycle3.CandidateBranchRetentionTests` |
 | Export | passed (fake CLI): redaction, path replacement, session id hashing, refusal of expired evidence | `python3 -m unittest tests.test_cli_cycle3.ExportTests` |
 | Uninstall | passed (fake CLI): removes only Autotune's data, branches and worktrees; never signals the worker during an apply | `python3 -m unittest tests.test_cli_cycle3.UninstallTests` |
 | Install with `--plugin-dir` | passed live (M0 run, `claude -p --plugin-dir <repo>`) | docs/IMPLEMENTATION_PLAN.md, M0 |
-| Install from a marketplace | **planned**: not published | `/plugin install autotune --marketplace <owner>/<repo>` |
+| Install from a marketplace | published as the `claude-autotune` marketplace in this repository; the install itself has not been tried from a clean machine | `/plugin install autotune --marketplace timini/claude-autotune` |
 
 ## Capture latency
 

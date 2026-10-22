@@ -420,8 +420,8 @@ Code and contract gaps:
 - `/autotune` commands time out after 20 seconds in the mod. `uninstall --yes` can wait up to 20 seconds for the
   worker, so it should be run from a terminal.
 - `autotune calibrate` has no `--split` option; the default `calibration` split is always used from the CLI.
-- The plugin has no license, author or icon. `claude plugin validate .` still gives README advice about the
-  marketplace install line, because `<owner>/<repo>` is a placeholder until the plugin is published.
+- The plugin has no icon. `claude plugin validate .` warns about it (ICON_MISSING); it matters only for a plugin
+  directory submission.
 
 ## 4. Component boundaries
 

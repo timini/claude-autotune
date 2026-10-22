@@ -42,13 +42,17 @@ git clone <this repository> /path/to/claude-autotune
 cd /path/to/repo && claude --plugin-dir /path/to/claude-autotune
 ```
 
-From a marketplace, once it is published:
+From the marketplace, at the prompt of a Claude Code terminal session (answer `y` to add the marketplace, then pick a scope):
 
 ```
-/plugin install autotune --marketplace <owner>/<repo>
+/plugin install autotune --marketplace timini/claude-autotune
 ```
 
-`<owner>/<repo>` is a placeholder. The plugin is not published to a marketplace yet.
+From a shell:
+
+```sh
+claude plugin install autotune --marketplace timini/claude-autotune
+```
 
 ## Quick start
 
@@ -153,3 +157,7 @@ skill extraction and consolidation. [Hermitd](https://github.com/gtapps/hermitd)
 evidence judging, and [Kayba AutoHarness](https://github.com/kayba-ai/autoharness) connects harness changes to
 benchmark results. Autotune combines these into a bounded, per-response workflow with a persistent record of
 attempted changes and observed regressions. It does not claim that self-improving harnesses are new.
+
+## License
+
+MIT. See [LICENSE](LICENSE).

@@ -1,0 +1,13 @@
+{
+  "name": "claude-autotune",
+  "description": "Autotune: background review and tested harness improvements for Claude Code",
+  "owner": {
+    "name": "Tim Richardson"
+  },
+  "plugins": [
+    {
+      "name": "autotune",
+      "source": "./"
+    }
+  ]
+}
