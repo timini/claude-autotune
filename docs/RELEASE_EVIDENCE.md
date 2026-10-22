@@ -31,7 +31,7 @@ against the uncommitted working tree after cycle 3. Re-run them on the release c
 | Export | passed (fake CLI): redaction, path replacement, session id hashing, refusal of expired evidence | `python3 -m unittest tests.test_cli_cycle3.ExportTests` |
 | Uninstall | passed (fake CLI): removes only Autotune's data, branches and worktrees; never signals the worker during an apply | `python3 -m unittest tests.test_cli_cycle3.UninstallTests` |
 | Install with `--plugin-dir` | passed live (M0 run, `claude -p --plugin-dir <repo>`) | docs/IMPLEMENTATION_PLAN.md, M0 |
-| Install from a marketplace | published as the `claude-autotune` marketplace in this repository; the install itself has not been tried from a clean machine | `/plugin install autotune --marketplace timini/claude-autotune` |
+| Install from a marketplace | published as the `claude-autotune` marketplace in this repository; installed and enabled from GitHub into an empty `CLAUDE_CONFIG_DIR` on 22 October 2026 (Claude Code 2.1.306) | `/plugin install autotune --marketplace timini/claude-autotune` |
 
 ## Capture latency
 
